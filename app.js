@@ -9,8 +9,11 @@ let gameState = {
   levelQuestions: [],
   usedQuestions: [],
   attemptCount: 0,
-  currentQuestion: null
+  currentQuestion: null,
+  questionHistory: []
 };
+
+const STORAGE_KEY = '1Samuel-gameState';
 
 // All Questions Data
 const allQuestions = [
@@ -20,140 +23,160 @@ const allQuestions = [
     question: "من هي أم النبي صموئيل؟",
     options: ["راحيل", "حنة", "دبورة", "مريم"],
     correct: 1,
-    verse: "1 صموئيل 1: 20"
+    verse: "1 صموئيل 1: 20",
+    verseText: "وفي وقت محتوم، حبلت حنة وولدت ابناً، ودعت اسمه صموئيل. قالت: 'لأني طلبته من الرب.'"
   },
   {
     level: 1,
     question: "من هو والد صموئيل النبي؟",
     options: ["يسى", "شاول", "ألقانة", "عالي"],
     correct: 2,
-    verse: "1 صموئيل 1: 1"
+    verse: "1 صموئيل 1: 1",
+    verseText: "وكان رجل من رامة صوفيم من جبل أفرايم اسمه ألقانة بن يروحام بن إليهو بن توحو بن صوف أفرايمي."
   },
   {
     level: 1,
     question: "كم عدد زوجات ألقانة والد صموئيل؟",
     options: ["واحدة", "اثنتان", "ثلاث", "أربع"],
     correct: 1,
-    verse: "1 صموئيل 1: 2"
+    verse: "1 صموئيل 1: 2",
+    verseText: "وكان له امرأتان: اسم إحداهما حنة واسم الأخرى بنينة. وبنينة ولد لها أطفال وأما حنة فلم يكن لها أطفال."
   },
   {
     level: 1,
     question: "من كان الكاهن في شيلوه عندما صلت حنة؟",
     options: ["صموئيل", "عالي", "ناثان", "صادوق"],
     correct: 1,
-    verse: "1 صموئيل 1: 9"
+    verse: "1 صموئيل 1: 9",
+    verseText: "فقامت حنة بعد فراغهم من الأكل والشرب في شيلوه، وعالي الكاهن جالس على الكرسي بجانب باب هيكل الرب."
   },
   {
     level: 1,
     question: "من هو أول ملك لإسرائيل؟",
     options: ["داود", "سليمان", "شاول", "يوناثان"],
     correct: 2,
-    verse: "1 صموئيل 10: 24"
+    verse: "1 صموئيل 10: 24",
+    verseText: "وقال صموئيل لكل الشعب: 'هل رأيتم الذي اختاره الرب؟ ليس مثله في كل الشعب.' فهتف كل الشعب وقال: 'ليحي الملك.'"
   },
   {
     level: 1,
     question: "من قتل جليات الجبار؟",
     options: ["شاول", "يوناثان", "داود", "صموئيل"],
     correct: 2,
-    verse: "1 صموئيل 17: 50"
+    verse: "1 صموئيل 17: 50",
+    verseText: "فغلب داود الفلسطيني بالمقلاع والحجر وضرب الفلسطيني وقتله. ولم يكن في يد داود سيف."
   },
   {
     level: 1,
     question: "من أي سبط كان شاول الملك؟",
     options: ["يهوذا", "بنيامين", "أفرايم", "لاوي"],
     correct: 1,
-    verse: "1 صموئيل 9: 1-2"
+    verse: "1 صموئيل 9: 1-2",
+    verseText: "وكان هناك رجل من بنيامين اسمه قيس بن أبيئيل... وكان له ابن اسمه شاول، حسن وجميل جداً، ولم يكن بين بني إسرائيل أحسن منه."
   },
   {
     level: 1,
     question: "كم حجراً اختار داود لمواجهة جليات؟",
     options: ["ثلاثة", "أربعة", "خمسة", "سبعة"],
     correct: 2,
-    verse: "1 صموئيل 17: 40"
+    verse: "1 صموئيل 17: 40",
+    verseText: "وأخذ عصاه بيده واختار له خمسة حجارة ملساء من الوادي، وجعلها في حقيبة الراعي التي معه، وفي يده مقلاعه."
   },
   {
     level: 1,
     question: "من كان ابن عالي الكاهن الذي مات في المعركة مع الفلسطينيين؟",
     options: ["حفني وفينحاس", "قايين وهابيل", "يعقوب وعيسو", "موسى وهارون"],
     correct: 0,
-    verse: "1 صموئيل 4: 11"
+    verse: "1 صموئيل 4: 11",
+    verseText: "وأخذ الفلسطينيون تابوت الله، وقتل ابنا عالي، حفني وفينحاس."
   },
   {
     level: 1,
     question: "ما اسم صديق داود ابن شاول؟",
     options: ["أبشالوم", "يوناثان", "أدونيا", "أمنون"],
     correct: 1,
-    verse: "1 صموئيل 18: 1"
+    verse: "1 صموئيل 18: 1",
+    verseText: "وعندما انتهى داود من الكلام مع شاول، تعلقت نفس يوناثان بنفس داود، وأحبه يوناثان كنفسه."
   },
   {
     level: 1,
     question: "إلى أين أخذ الفلسطينيون تابوت العهد بعد الاستيلاء عليه؟",
     options: ["أشدود", "بابل", "مصر", "دمشق"],
     correct: 0,
-    verse: "1 صموئيل 5: 1"
+    verse: "1 صموئيل 5: 1",
+    verseText: "وأخذ الفلسطينيون تابوت الله وأتوا به من حجر الله إلى أشدود."
   },
   {
     level: 1,
     question: "من مسح داود ملكاً على إسرائيل؟",
     options: ["عالي", "ناثان", "صموئيل", "شاول"],
     correct: 2,
-    verse: "1 صموئيل 16: 13"
+    verse: "1 صموئيل 16: 13",
+    verseText: "وأخذ صموئيل قرن الزيت ومسح داود في وسط إخوته. وحلّ روح الرب على داود من ذلك اليوم فصاعداً."
   },
   {
     level: 1,
     question: "كم كان عمر صموئيل تقريباً عندما دعاه الله؟",
     options: ["شيخ", "صبي صغير", "شاب", "رضيع"],
     correct: 1,
-    verse: "1 صموئيل 3: 1"
+    verse: "1 صموئيل 3: 1",
+    verseText: "وكان الصبي صموئيل يخدم الرب أمام عالي. وكانت كلمة الرب نادرة في تلك الأيام."
   },
   {
     level: 1,
     question: "ماذا كان داود يفعل عندما أرسل صموئيل لمسحه؟",
     options: ["يحارب", "يصلي", "يرعى الغنم", "يدرس"],
     correct: 2,
-    verse: "1 صموئيل 16: 11"
+    verse: "1 صموئيل 16: 11",
+    verseText: "وقال صموئيل لعيسى: 'هل هنا بقية من البنين؟' قال عيسى: 'بقي بعد الصغير وهو يرعى الغنم.'"
   },
   {
     level: 1,
     question: "من كانت زوجة داود ابنة شاول؟",
     options: ["راحيل", "ميكال", "أبيجايل", "بثشبع"],
     correct: 1,
-    verse: "1 صموئيل 18: 27"
+    verse: "1 صموئيل 18: 27",
+    verseText: "فقام داود وانطلق هو ورجاله وقتلوا من الفلسطينيين مئتي رجل. وأتى داود بجميع القلفة إلى الملك ليصير صهره."
   },
   {
     level: 1,
     question: "كم كان عدد إخوة داود الأكبر منه؟",
     options: ["خمسة", "ستة", "سبعة", "ثمانية"],
     correct: 2,
-    verse: "1 صموئيل 16: 10"
+    verse: "1 صموئيل 16: 10",
+    verseText: "وأمر عيسى سبعة من بنيه أن يمروا أمام صموئيل، فقال صموئيل لعيسى: 'الرب لم يختر هؤلاء.'"
   },
   {
     level: 1,
     question: "ماذا كانت مهنة داود قبل أن يصبح ملكاً؟",
     options: ["صياد", "نجار", "راعي غنم", "جندي"],
     correct: 2,
-    verse: "1 صموئيل 16: 11"
+    verse: "1 صموئيل 16: 11",
+    verseText: "وقال عيسى: 'بقي بعد الصغير وهو يرعى الغنم.' فقال صموئيل: 'أرسل وأتِ به لأننا لا نجلس حتى يجيء هنا.'"
   },
   {
     level: 1,
     question: "في أي مدينة كان بيت عالي الكاهن؟",
     options: ["أورشليم", "بيت لحم", "شيلوه", "الخليل"],
     correct: 2,
-    verse: "1 صموئيل 1: 3"
+    verse: "1 صموئيل 1: 3",
+    verseText: "وكان هذا الرجل يصعد من مدينته كل سنة ليسجد للرب جنود السماوات في شيلوه."
   },
   {
     level: 1,
     question: "من هو والد داود؟",
     options: ["شاول", "يسى", "صموئيل", "عالي"],
     correct: 1,
-    verse: "1 صموئيل 16: 1"
+    verse: "1 صموئيل 16: 1",
+    verseText: "وقال الرب لصموئيل: 'إلى متى أنت حزين على شاول وأنا قد رفضته عن الملك على إسرائيل؟ امل قرنك بزيت واذهب...'"
   },
   {
     level: 1,
     question: "كيف مات شاول الملك؟",
     options: ["قتله داود", "قتله الفلسطينيون", "سقط على سيفه (انتحر)", "مات مرضاً"],
     correct: 2,
-    verse: "1 صموئيل 31: 4"
+    verse: "1 صموئيل 31: 4",
+    verseText: "فقال شاول لحامل سلاحه: 'اسحب سيفك واطعنني به، لئلا يأتي هؤلاء غير المختونين ويطعنونني.' فلم يشأ حامل سلاحه لأنه خاف جداً. فأخذ شاول السيف وسقط عليه."
   },
   // Level 2 - Medium Questions
   {
@@ -161,42 +184,48 @@ const allQuestions = [
     question: "ماذا كان اسم الزوجة الثانية لألقانة التي كانت تغيظ حنة؟",
     options: ["بنينة", "راحيل", "ليئة", "سارة"],
     correct: 0,
-    verse: "1 صموئيل 1: 2"
+    verse: "1 صموئيل 1: 2",
+    verseText: "وكان له امرأتان: اسم إحداهما حنة واسم الأخرى بنينة. وبنينة ولد لها أطفال وأما حنة فلم يكن لها أطفال."
   },
   {
     level: 2,
     question: "ماذا ظن عالي عن حنة عندما رآها تصلي في الهيكل؟",
     options: ["أنها مريضة", "أنها سكرانة", "أنها نبية", "أنها حزينة"],
     correct: 1,
-    verse: "1 صموئيل 1: 13-14"
+    verse: "1 صموئيل 1: 13-14",
+    verseText: "وحنة كانت تتكلم في قلبها فقط أما شفتاها فكانتا تتحركان ولم يُسمع صوتها. فظن عالي أنها سكرى. فقال لها عالي: 'حتى متى تسكرين؟'"
   },
   {
     level: 2,
     question: "كم مرة دعا الرب صموئيل في الليل قبل أن يفهم أنه الرب؟",
     options: ["مرتين", "ثلاث مرات", "أربع مرات", "خمس مرات"],
     correct: 2,
-    verse: "1 صموئيل 3: 8"
+    verse: "1 صموئيل 3: 8",
+    verseText: "فدعا الرب صموئيل ثالثة. فقام صموئيل وذهب إلى عالي وقال: 'ها أنا ذا. فنادني. تقول ماذا؟'"
   },
   {
     level: 2,
     question: "ما اسم إله الفلسطينيين الذي سقط تمثاله أمام تابوت العهد؟",
     options: ["بعل", "داجون", "مولك", "عشتاروث"],
     correct: 1,
-    verse: "1 صموئيل 5: 3-4"
+    verse: "1 صموئيل 5: 3-4",
+    verseText: "وعندما استيقظ أهل أشدود في الصباح، إذا داجون سقط على وجهه أمام تابوت الرب. فأقاموه وأرجعوه إلى موضعه."
   },
   {
     level: 2,
     question: "كم سنة بقي تابوت العهد في قرية يعاريم؟",
     options: ["سبع سنوات", "عشرين سنة", "أربعين سنة", "ثلاث سنوات"],
     correct: 1,
-    verse: "1 صموئيل 7: 2"
+    verse: "1 صموئيل 7: 2",
+    verseText: "وفي ذلك الوقت من يوم أن استقر التابوت في قرية يعاريم، مرّ الوقت طويلاً جداً، إذ بلغ عشرين سنة."
   },
   {
     level: 2,
     question: "ماذا قدم الفلسطينيون مع تابوت العهد عند إرجاعه؟",
     options: ["ذهب وفضة", "قرابين ذهبية على شكل بواسير وفئران", "ماشية ومحاصيل", "عبيد وجواري"],
     correct: 1,
-    verse: "1 صموئيل 6: 4-5"
+    verse: "1 صموئيل 6: 4-5",
+    verseText: "فقالوا: 'ما هي قربانة الذنب التي نرسلها له؟' فقالوا: 'عدد أقاليم الفلسطينيين خمسة بواسير من ذهب وخمس فئران من ذهب.'"
   },
   {
     level: 2,
@@ -439,6 +468,125 @@ const allQuestions = [
   }
 ];
 
+// Check for saved game on load
+window.addEventListener('DOMContentLoaded', () => {
+  checkForSavedGame();
+  setupKeyboardControls();
+});
+
+function checkForSavedGame() {
+  const savedGame = loadGameState();
+  if (savedGame && savedGame.numTeams > 0) {
+    document.getElementById('resumeOptions').classList.remove('hidden');
+    document.getElementById('newGameForm').classList.add('hidden');
+  }
+}
+
+function resumeGame() {
+  const savedGame = loadGameState();
+  if (savedGame) {
+    gameState = savedGame;
+    document.getElementById('setupScreen').classList.add('hidden');
+    document.getElementById('gameScreen').classList.remove('hidden');
+    document.getElementById('appHeader').style.display = 'flex';
+    document.getElementById('backBtn').style.display = 'block';
+    document.getElementById('resetBtn').style.display = 'block';
+    updateScoreboard();
+    updateProgressBar();
+    loadQuestion();
+  }
+}
+
+function clearSavedGame() {
+  if (confirm('هل أنت متأكد من بدء لعبة جديدة؟ سيتم حذف التقدم المحفوظ.')) {
+    clearStorage();
+    document.getElementById('resumeOptions').classList.add('hidden');
+    document.getElementById('newGameForm').classList.remove('hidden');
+  }
+}
+
+function saveGameState() {
+  try {
+    const stateToSave = JSON.stringify(gameState);
+    // Use in-memory storage since localStorage is blocked
+    window.gameStateBackup = stateToSave;
+  } catch (e) {
+    console.log('Cannot save to localStorage (sandboxed environment)');
+  }
+}
+
+function loadGameState() {
+  try {
+    const saved = window.gameStateBackup;
+    return saved ? JSON.parse(saved) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function clearStorage() {
+  window.gameStateBackup = null;
+}
+
+function setupKeyboardControls() {
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('gameScreen').classList.contains('hidden')) return;
+    
+    if (e.key >= '1' && e.key <= '4') {
+      const index = parseInt(e.key) - 1;
+      const buttons = document.querySelectorAll('.option-btn');
+      if (buttons[index] && !buttons[index].disabled) {
+        buttons[index].click();
+      }
+    } else if (e.key === 'Enter') {
+      const nextBtn = document.getElementById('nextBtn');
+      if (!nextBtn.classList.contains('hidden')) {
+        nextBtn.click();
+      }
+    } else if (e.key === 'Escape') {
+      goBack();
+    } else if (e.key === 'r' || e.key === 'R') {
+      resetGame();
+    }
+  });
+}
+
+function goBack() {
+  if (gameState.questionHistory.length === 0) {
+    if (confirm('هل تريد العودة إلى البداية؟')) {
+      resetGame();
+    }
+    return;
+  }
+  
+  if (confirm('هل تريد العودة للسؤال السابق؟ سيتم العودة لآخر حفظ.')) {
+    const lastState = gameState.questionHistory.pop();
+    gameState.currentTeamIndex = lastState.teamIndex;
+    gameState.usedQuestions.pop();
+    updateScoreboard();
+    updateProgressBar();
+    loadQuestion();
+    saveGameState();
+  }
+}
+
+function resetGame() {
+  if (confirm('هل تريد بدء لعبة جديدة؟ سيتم حذف كل التقدم.')) {
+    clearStorage();
+    location.reload();
+  }
+}
+
+function updateProgressBar() {
+  const totalQuestions = gameState.questionsPerTeam * gameState.numTeams;
+  const currentQuestion = gameState.usedQuestions.length;
+  const percentage = (currentQuestion / totalQuestions) * 100;
+  
+  document.getElementById('progressFill').style.width = percentage + '%';
+  document.getElementById('progressText').textContent = `السؤال ${currentQuestion} من ${totalQuestions}`;
+  document.getElementById('levelProgress').textContent = `المستوى ${gameState.currentLevel}/3`;
+}
+
 // Initialize Game
 function startGame() {
   const teamCount = parseInt(document.getElementById('teamCount').value);
@@ -474,8 +622,13 @@ function startGame() {
   document.getElementById('gameScreen').classList.remove('hidden');
   
   // Update UI
+  document.getElementById('appHeader').style.display = 'flex';
+  document.getElementById('backBtn').style.display = 'block';
+  document.getElementById('resetBtn').style.display = 'block';
   updateScoreboard();
+  updateProgressBar();
   loadQuestion();
+  saveGameState();
 }
 
 // Prepare questions for current level
@@ -542,6 +695,12 @@ function loadQuestion() {
   gameState.currentQuestion = gameState.levelQuestions[questionIndex];
   gameState.attemptCount = 0;
   
+  // Save question history for back button
+  gameState.questionHistory.push({
+    teamIndex: gameState.currentTeamIndex,
+    questionIndex: questionIndex
+  });
+  
   // Calculate total questions for current team in this level
   const totalQuestionsThisLevel = gameState.questionsPerTeam * gameState.numTeams;
   const currentQuestionNum = gameState.usedQuestions.length;
@@ -587,6 +746,7 @@ function checkAnswer(selectedIndex) {
   if (isCorrect) {
     // Correct answer
     buttons[selectedIndex].classList.add('correct');
+    buttons[selectedIndex].parentElement.classList.add('fade-in');
     
     // Calculate points
     let points = 0;
@@ -606,12 +766,18 @@ function checkAnswer(selectedIndex) {
     feedback.innerHTML = `
       <h3>✅ إجابة صحيحة!</h3>
       <p>حصلت على ${points} نقطة</p>
-      <p class="verse">الشاهد: ${gameState.currentQuestion.verse}</p>
+      <div class="verse-box">
+        <div class="verse-reference">${gameState.currentQuestion.verse}</div>
+        <div class="verse-text">${gameState.currentQuestion.verseText || 'الشاهد غير متوفر'}</div>
+      </div>
     `;
     feedback.classList.remove('hidden');
     
-    // Update scoreboard
+    // Update scoreboard with animation
     updateScoreboard();
+    
+    // Save state after answer
+    saveGameState();
     
     // Show next button
     document.getElementById('nextBtn').classList.remove('hidden');
@@ -656,11 +822,26 @@ function checkAnswer(selectedIndex) {
   }
 }
 
+// Add score animation
+function animateScore(teamIndex) {
+  const teamScores = document.querySelectorAll('.team-score');
+  if (teamScores[teamIndex]) {
+    teamScores[teamIndex].classList.add('score-update');
+    setTimeout(() => {
+      teamScores[teamIndex].classList.remove('score-update');
+    }, 600);
+  }
+}
+
 // Next Question
 function nextQuestion() {
   // Move to next team
   gameState.currentTeamIndex = (gameState.currentTeamIndex + 1) % gameState.numTeams;
   gameState.currentQuestionIndex++;
+  
+  // Save state
+  saveGameState();
+  updateProgressBar();
   
   // Check if all teams have answered their questions for this level
   const questionsPerLevel = gameState.questionsPerTeam * gameState.numTeams;
@@ -696,7 +877,9 @@ function showLevelComplete() {
     document.getElementById('nextBtn').textContent = 'التالي';
     document.getElementById('nextBtn').onclick = nextQuestion;
     updateScoreboard();
+    updateProgressBar();
     loadQuestion();
+    saveGameState();
   };
   
   // Hide options
@@ -706,6 +889,7 @@ function showLevelComplete() {
 
 // Show Winner
 function showWinner() {
+  clearStorage(); // Clear saved game when finished
   // Sort teams by score
   const sortedTeams = [...gameState.teams].sort((a, b) => b.score - a.score);
   const winner = sortedTeams[0];
