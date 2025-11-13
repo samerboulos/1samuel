@@ -846,7 +846,13 @@ function checkAnswer(selectedIndex) {
       feedback.innerHTML = `
         <h3>❌ إجابة خاطئة!</h3>
         <p>الإجابة الصحيحة: ${gameState.currentQuestion.options[correctIndex]}</p>
-        <p class="verse">الشاهد: ${gameState.currentQuestion.verse}</p>
+     
+		<div class="verse-box">
+        <div class="verse-reference">${gameState.currentQuestion.verse}</div>
+        <div class="verse-text">${gameState.currentQuestion.verseText || 'الشاهد غير متوفر'}</div>
+      </div>
+	  
+	  
       `;
       feedback.classList.remove('hidden');
       
